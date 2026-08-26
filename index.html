@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   
-  <!-- SEO & 오픈그래프(카카오톡, X/트위터, 디스코드 링크 미리보기) -->
-  <title>골든 피기: 동전 받기 게임</title>
+  <!-- SEO & 오픈그래프 -->
+  <title>구세군 자선냄비: 사랑의 모금 게임</title>
   <meta property="og:type" content="website">
-  <meta property="og:title" content="골든 피기: 동전 받기 게임">
-  <meta property="og:description" content="떨어지는 동전을 받아 최고 저금액 기록을 세워보세요!">
+  <meta property="og:title" content="구세군 자선냄비: 사랑의 모금 게임">
+  <meta property="og:description" content="따뜻한 마음을 모아주세요! 45초 동안 자선냄비에 기부금을 받아 최고 기록을 달성해보세요.">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="골든 피기: 동전 받기 게임">
-  <meta name="twitter:description" content="떨어지는 동전을 받아 최고 저금액 기록을 세워보세요!">
+  <meta name="twitter:title" content="구세군 자선냄비: 사랑의 모금 게임">
+  <meta name="twitter:description" content="따뜻한 마음을 모아주세요! 45초 동안 자선냄비에 기부금을 받아 최고 기록을 달성해보세요.">
 
   <style>
     * {
@@ -24,7 +24,7 @@
     }
 
     body {
-      background-color: #0f172a;
+      background-color: #0b1329;
       font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", Roboto, sans-serif;
       display: flex;
       justify-content: center;
@@ -41,9 +41,9 @@
       max-width: 440px;
       height: 100vh;
       max-height: 820px;
-      background: #0284c7;
+      background: #0f172a;
       border-radius: 0px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -56,36 +56,45 @@
       }
     }
 
-    /* 상단 유틸리티 바 */
+    /* 상단 유틸리티 바 (HUD) */
     #top-bar {
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
-      padding: 14px 18px;
+      padding: 12px 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       z-index: 10;
       pointer-events: none;
+      gap: 6px;
     }
 
     .top-pill {
-      background: rgba(0, 0, 0, 0.45);
-      backdrop-filter: blur(6px);
-      padding: 6px 14px;
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      padding: 6px 10px;
       border-radius: 20px;
       color: white;
-      font-size: 0.95rem;
+      font-size: 0.88rem;
       font-weight: 700;
       pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .top-pill.timer {
+      color: #fde047;
     }
 
     .icon-btn {
-      background: rgba(0, 0, 0, 0.45);
-      border: none;
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       color: white;
-      font-size: 1.1rem;
+      font-size: 1rem;
       padding: 6px 10px;
       border-radius: 50%;
       cursor: pointer;
@@ -97,15 +106,15 @@
       width: 100%;
       height: 100%;
       display: block;
-      background: linear-gradient(180deg, #38bdf8 0%, #0369a1 100%);
+      background: linear-gradient(180deg, #091224 0%, #1e293b 65%, #334155 100%);
     }
 
-    /* UI 오버레이 (시작화면, 결과화면) */
+    /* UI 오버레이 */
     .overlay {
       position: absolute;
       inset: 0;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(8px);
+      background: rgba(11, 19, 41, 0.88);
+      backdrop-filter: blur(10px);
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -121,41 +130,67 @@
     }
 
     .game-logo {
-      font-size: 72px;
-      margin-bottom: 10px;
-      filter: drop-shadow(0 6px 12px rgba(0,0,0,0.3));
-      animation: bounce 1.8s infinite ease-in-out;
+      font-size: 68px;
+      margin-bottom: 8px;
+      filter: drop-shadow(0 6px 12px rgba(220, 38, 38, 0.4));
+      animation: bellShake 2s infinite ease-in-out;
     }
 
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-12px); }
+    @keyframes bellShake {
+      0%, 100% { transform: rotate(0deg); }
+      15% { transform: rotate(14deg); }
+      30% { transform: rotate(-12deg); }
+      45% { transform: rotate(8deg); }
+      60% { transform: rotate(-4deg); }
+      75% { transform: rotate(0deg); }
     }
 
     .game-title {
-      font-size: 2rem;
+      font-size: 1.8rem;
       font-weight: 900;
-      color: #fff;
-      margin-bottom: 8px;
+      color: #f8fafc;
+      margin-bottom: 12px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+
+    .game-desc-box {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 20px;
+      width: 100%;
+      max-width: 320px;
     }
 
     .game-desc {
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       color: #cbd5e1;
-      margin-bottom: 24px;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    .game-notice {
+      font-size: 0.88rem;
+      color: #fde047;
+      font-weight: 700;
       line-height: 1.5;
+      background: rgba(234, 179, 8, 0.15);
+      border-radius: 10px;
+      padding: 8px 10px;
+      border: 1px dashed rgba(253, 224, 71, 0.4);
     }
 
     .btn {
-      background: #fbbf24;
-      color: #78350f;
+      background: #dc2626;
+      color: #ffffff;
       border: none;
       font-size: 1.15rem;
       font-weight: 800;
       padding: 14px 36px;
       border-radius: 9999px;
       cursor: pointer;
-      box-shadow: 0 6px 0 #b45309, 0 10px 15px rgba(0,0,0,0.3);
+      box-shadow: 0 6px 0 #991b1b, 0 10px 18px rgba(220, 38, 38, 0.4);
       transition: all 0.1s ease;
       display: inline-flex;
       align-items: center;
@@ -164,15 +199,15 @@
 
     .btn:active {
       transform: translateY(4px);
-      box-shadow: 0 2px 0 #b45309;
+      box-shadow: 0 2px 0 #991b1b;
     }
 
     .btn-secondary {
       background: #334155;
       color: #f1f5f9;
       box-shadow: 0 4px 0 #1e293b;
-      font-size: 0.95rem;
-      padding: 10px 20px;
+      font-size: 0.92rem;
+      padding: 10px 16px;
     }
 
     .btn-secondary:active {
@@ -183,35 +218,45 @@
     /* 결과 모달 카드 */
     .result-card {
       background: white;
-      border-radius: 20px;
+      border-radius: 22px;
       padding: 24px;
       width: 100%;
       max-width: 320px;
-      box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+      box-shadow: 0 16px 32px rgba(0,0,0,0.4);
       margin-bottom: 18px;
     }
 
     .result-title {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       color: #64748b;
       font-weight: 700;
     }
 
     .result-score {
-      font-size: 2.2rem;
+      font-size: 2.1rem;
       font-weight: 900;
-      color: #0284c7;
+      color: #dc2626;
       margin: 8px 0;
     }
 
     .result-best {
       font-size: 0.85rem;
-      color: #f59e0b;
+      color: #b45309;
       font-weight: 700;
       background: #fef3c7;
       display: inline-block;
-      padding: 4px 10px;
+      padding: 4px 12px;
       border-radius: 8px;
+    }
+
+    .result-hint {
+      margin-top: 12px;
+      font-size: 0.82rem;
+      color: #475569;
+      background: #f1f5f9;
+      padding: 8px;
+      border-radius: 8px;
+      font-weight: 600;
     }
 
     .share-group {
@@ -224,9 +269,9 @@
     #toast {
       position: absolute;
       bottom: 24px;
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, 0.85);
       color: white;
-      padding: 8px 16px;
+      padding: 8px 18px;
       border-radius: 20px;
       font-size: 0.85rem;
       opacity: 0;
@@ -242,7 +287,8 @@
   <!-- 상단 HUD 바 -->
   <div id="top-bar">
     <div class="top-pill" id="hud-score">🪙 0원</div>
-    <div style="display: flex; gap: 8px; align-items: center;">
+    <div class="top-pill timer" id="hud-timer">⏱️ 45초</div>
+    <div style="display: flex; gap: 6px; align-items: center;">
       <div class="top-pill" id="hud-lives">❤️❤️❤️</div>
       <button class="icon-btn" id="sound-btn">🔊</button>
     </div>
@@ -253,28 +299,34 @@
 
   <!-- 1. 시작 화면 오버레이 -->
   <div class="overlay" id="start-screen">
-    <div class="game-logo">🐷</div>
-    <h1 class="game-title">골든 피기</h1>
-    <p class="game-desc">
-      좌우로 움직여 떨어지는 동전을 받으세요!<br>
-      💣 폭탄을 피하고 최고 금액을 저금해보세요.
-    </p>
-    <button class="btn" id="start-btn">게임 시작 🎮</button>
+    <div class="game-logo">🔔</div>
+    <h1 class="game-title">구세군 자선냄비</h1>
+    <div class="game-desc-box">
+      <p class="game-desc">
+        ❄️ 좌우로 움직여 떨어지는 후원금과 동전을 자선냄비에 받아주세요!<br>
+        🧊 차가운 얼음/눈덩이를 피하고 <b>45초</b> 동안 최대한 많은 성금을 모아보세요.
+      </p>
+      <div class="game-notice">
+        📌 점수 달성 후 해당 멘션 밑에 캡쳐 화면을 보여주세요.
+      </div>
+    </div>
+    <button class="btn" id="start-btn">모금 시작하기 ❤️</button>
   </div>
 
   <!-- 2. 게임오버 화면 오버레이 -->
   <div class="overlay hidden" id="gameover-screen">
     <div class="result-card">
-      <div class="result-title">최종 저금액</div>
+      <div class="result-title">최종 모금액</div>
       <div class="result-score" id="final-score">0원</div>
       <div class="result-best" id="best-score-label">👑 최고 기록: 0원</div>
+      <div class="result-hint">📸 캡쳐하여 멘션 답글로 인증해주세요!</div>
       
       <div class="share-group">
         <button class="btn btn-secondary" style="flex:1;" id="twitter-share-btn">𝕏 공유</button>
-        <button class="btn btn-secondary" style="flex:1;" id="copy-link-btn">🔗 복사</button>
+        <button class="btn btn-secondary" style="flex:1;" id="copy-link-btn">🔗 링크 복사</button>
       </div>
     </div>
-    <button class="btn" id="restart-btn">다시 하기 🔄</button>
+    <button class="btn" id="restart-btn">다시 기부하기 🔄</button>
   </div>
 
   <!-- 링크 복사 토스트 메시지 -->
@@ -283,7 +335,7 @@
 
 <script>
   /* ----------------------------------------------------
-     1. 사운드 시스템 (Web Audio API - 무외부 파일 합성)
+     1. 사운드 시스템 (Web Audio API)
   ---------------------------------------------------- */
   let audioCtx = null;
   let soundEnabled = true;
@@ -298,37 +350,60 @@
     if (!soundEnabled || !audioCtx) return;
     if (audioCtx.state === 'suspended') audioCtx.resume();
 
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
     const now = audioCtx.currentTime;
 
-    if (type === 'coin') {
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(987.77, now); // B5
-      osc.frequency.exponentialRampToValueAtTime(1318.51, now + 0.12); // E6
-      gain.gain.setValueAtTime(0.2, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-      osc.start(now);
-      osc.stop(now + 0.12);
-    } else if (type === 'bomb') {
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(160, now);
-      osc.frequency.exponentialRampToValueAtTime(30, now + 0.3);
-      gain.gain.setValueAtTime(0.3, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
-      osc.start(now);
-      osc.stop(now + 0.3);
-    } else if (type === 'gameover') {
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(440, now);
-      osc.frequency.setValueAtTime(370, now + 0.15);
-      osc.frequency.setValueAtTime(311, now + 0.3);
+    if (type === 'bell' || type === 'coin') {
+      // 자선냄비 종소리 (맑은 벨 톤 합성)
+      const osc1 = audioCtx.createOscillator();
+      const osc2 = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      
+      osc1.type = 'sine';
+      osc2.type = 'triangle';
+      
+      const freq = type === 'coin' ? 1046.50 : 1318.51; // C6 or E6
+      osc1.frequency.setValueAtTime(freq, now);
+      osc2.frequency.setValueAtTime(freq * 2.02, now);
+
       gain.gain.setValueAtTime(0.25, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+      osc1.connect(gain);
+      osc2.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc1.start(now);
+      osc2.start(now);
+      osc1.stop(now + 0.25);
+      osc2.stop(now + 0.25);
+    } else if (type === 'hit') {
+      // 장애물 부딪힘 (얼음 깨짐/눈 충돌)
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(200, now);
+      osc.frequency.exponentialRampToValueAtTime(40, now + 0.25);
+      gain.gain.setValueAtTime(0.3, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
       osc.start(now);
-      osc.stop(now + 0.6);
+      osc.stop(now + 0.25);
+    } else if (type === 'gameover') {
+      // 종료 징글
+      const notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, idx) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+        gain.gain.setValueAtTime(0.2, now + idx * 0.12);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.3);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now + idx * 0.12);
+        osc.stop(now + idx * 0.12 + 0.3);
+      });
     }
   }
 
@@ -338,32 +413,47 @@
   const canvas = document.getElementById('gameCanvas');
   const ctx = canvas.getContext('2d');
 
+  const GAME_DURATION = 45; // 45초
+  let timeLeft = GAME_DURATION;
+  let timerInterval = null;
+
   let score = 0;
   let lives = 3;
   let isPlaying = false;
   let frame = 0;
   let items = [];
   let floatingTexts = [];
+  let snowflakes = [];
 
-  const basket = {
+  // 구세군 자선냄비 오브젝트
+  const kettle = {
     x: 160,
-    y: 600,
-    width: 75,
-    height: 60,
-    speed: 7,
-    emoji: '🐷'
+    y: 590,
+    width: 80,
+    height: 70,
+    speed: 7.5
   };
 
   const keys = { ArrowLeft: false, ArrowRight: false, a: false, d: false };
 
-  // 최고 기록 로컬스토리지
+  // 눈송이 배경 입자 초기화
+  for (let i = 0; i < 45; i++) {
+    snowflakes.push({
+      x: Math.random() * 400,
+      y: Math.random() * 700,
+      radius: Math.random() * 2.8 + 1,
+      speedY: Math.random() * 1.2 + 0.8,
+      speedX: Math.random() * 0.8 - 0.4
+    });
+  }
+
   function getHighScore() {
-    return parseInt(localStorage.getItem('piggy_highscore') || '0', 10);
+    return parseInt(localStorage.getItem('redkettle_highscore') || '0', 10);
   }
 
   function saveHighScore(val) {
     if (val > getHighScore()) {
-      localStorage.setItem('piggy_highscore', val);
+      localStorage.setItem('redkettle_highscore', val);
     }
   }
 
@@ -373,24 +463,30 @@
     let value = 100;
     let radius = 17;
     let color = '#fbbf24';
-    let speed = 3.5 + Math.min(score / 5000, 3.5);
+    let speed = 3.6 + Math.min(score / 8000, 3.2);
 
-    if (rand < 0.16) {
-      type = 'bomb';
+    if (rand < 0.18) {
+      type = 'ice'; // 얼음/눈폭탄
       value = -1;
-      radius = 18;
-      color = '#ef4444';
-      speed += 1.2;
-    } else if (rand < 0.42) {
+      radius = 19;
+      color = '#93c5fd';
+      speed += 1.0;
+    } else if (rand < 0.50) {
       type = '500';
       value = 500;
       radius = 20;
       color = '#e2e8f0';
-    } else if (rand < 0.50) {
+    } else if (rand < 0.72) {
       type = '1000';
       value = 1000;
       radius = 23;
-      color = '#38bdf8';
+      color = '#60a5fa';
+    } else if (rand < 0.82) {
+      type = '5000'; // 고액 후원권
+      value = 5000;
+      radius = 25;
+      color = '#f472b6';
+      speed += 0.5;
     }
 
     items.push({
@@ -405,26 +501,43 @@
   }
 
   function checkCollision(circle, rect) {
-    const closestX = Math.max(rect.x, Math.min(circle.x, rect.x + rect.width));
-    const closestY = Math.max(rect.y, Math.min(circle.y, rect.y + rect.height));
+    // 냄비 윗부분 입구 쪽으로 충돌 판정 최적화
+    const hitRect = {
+      x: rect.x + 5,
+      y: rect.y + 10,
+      width: rect.width - 10,
+      height: rect.height - 15
+    };
+    const closestX = Math.max(hitRect.x, Math.min(circle.x, hitRect.x + hitRect.width));
+    const closestY = Math.max(hitRect.y, Math.min(circle.y, hitRect.y + hitRect.height));
     const distX = circle.x - closestX;
     const distY = circle.y - closestY;
     return (distX * distX + distY * distY) < (circle.radius * circle.radius);
   }
 
   function update() {
+    // 배경 눈 내리기 효과
+    snowflakes.forEach(snow => {
+      snow.y += snow.speedY;
+      snow.x += snow.speedX;
+      if (snow.y > canvas.height) {
+        snow.y = -5;
+        snow.x = Math.random() * canvas.width;
+      }
+    });
+
     if (!isPlaying) return;
     frame++;
 
     // 키보드 조작
-    if (keys.ArrowLeft || keys.a) basket.x -= basket.speed;
-    if (keys.ArrowRight || keys.d) basket.x += basket.speed;
+    if (keys.ArrowLeft || keys.a) kettle.x -= kettle.speed;
+    if (keys.ArrowRight || keys.d) kettle.x += kettle.speed;
 
     // 경계 제약
-    basket.x = Math.max(0, Math.min(canvas.width - basket.width, basket.x));
+    kettle.x = Math.max(0, Math.min(canvas.width - kettle.width, kettle.x));
 
-    // 아이템 스폰 (점수가 높을수록 빈도 증가)
-    const spawnRate = Math.max(22, 38 - Math.floor(score / 3000));
+    // 아이템 스폰 (시간이 지날수록 약간 빠르게)
+    const spawnRate = Math.max(20, 36 - Math.floor((GAME_DURATION - timeLeft) / 3));
     if (frame % spawnRate === 0) spawnItem();
 
     // 아이템 이동 및 충돌
@@ -432,19 +545,27 @@
       const it = items[i];
       it.y += it.speed;
 
-      if (checkCollision(it, basket)) {
-        if (it.type === 'bomb') {
+      if (checkCollision(it, kettle)) {
+        if (it.type === 'ice') {
           lives--;
-          playSound('bomb');
-          floatingTexts.push({ text: '💥 -1', x: it.x, y: it.y, color: '#f87171', opacity: 1, life: 30 });
+          playSound('hit');
+          floatingTexts.push({ text: '❄️ 얼음! -1', x: it.x, y: it.y, color: '#93c5fd', opacity: 1, life: 30 });
           if (lives <= 0) {
             endGame();
             return;
           }
         } else {
           score += it.value;
-          playSound('coin');
-          floatingTexts.push({ text: `+${it.value}`, x: it.x, y: it.y, color: '#fde047', opacity: 1, life: 25 });
+          playSound('bell');
+          const isBig = it.value >= 1000;
+          floatingTexts.push({ 
+            text: `+${it.value.toLocaleString()}원`, 
+            x: it.x, 
+            y: it.y, 
+            color: isBig ? '#fde047' : '#ffffff', 
+            opacity: 1, 
+            life: 25 
+          });
         }
         updateHUD();
         items.splice(i, 1);
@@ -468,49 +589,118 @@
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 구름 배경 효과
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+    // 1. 눈송이 그리기
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+    snowflakes.forEach(snow => {
+      ctx.beginPath();
+      ctx.arc(snow.x, snow.y, snow.radius, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // 2. 바닥 눈밭 언덕 그리기
+    ctx.fillStyle = '#e2e8f0';
     ctx.beginPath();
-    ctx.arc(80, 120, 45, 0, Math.PI * 2);
-    ctx.arc(130, 110, 55, 0, Math.PI * 2);
-    ctx.arc(180, 120, 40, 0, Math.PI * 2);
+    ctx.ellipse(120, 710, 240, 60, 0, 0, Math.PI * 2);
+    ctx.ellipse(320, 715, 200, 55, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // 아이템 렌더링
+    ctx.fillStyle = '#f8fafc';
+    ctx.beginPath();
+    ctx.ellipse(200, 725, 260, 60, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 3. 떨어지는 아이템 렌더링
     items.forEach(it => {
+      ctx.save();
       ctx.beginPath();
       ctx.arc(it.x, it.y, it.radius, 0, Math.PI * 2);
       ctx.fillStyle = it.color;
       ctx.fill();
-      ctx.lineWidth = 3;
-      ctx.strokeStyle = it.type === 'bomb' ? '#991b1b' : '#b45309';
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = it.type === 'ice' ? '#3b82f6' : '#b45309';
       ctx.stroke();
 
-      ctx.fillStyle = it.type === 'bomb' ? '#fff' : '#78350f';
-      ctx.font = 'bold 13px -apple-system, sans-serif';
+      ctx.fillStyle = it.type === 'ice' ? '#1e3a8a' : '#78350f';
+      ctx.font = 'bold 12px -apple-system, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(it.type === 'bomb' ? '💣' : it.type, it.x, it.y);
+      ctx.fillText(it.type === 'ice' ? '❄️' : it.type, it.x, it.y);
+      ctx.restore();
     });
 
-    // 돼지 저금통 렌더링
-    ctx.font = '54px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(basket.emoji, basket.x + basket.width / 2, basket.y + basket.height / 2);
+    // 4. 구세군 자선냄비 렌더링
+    drawRedKettle(kettle.x, kettle.y, kettle.width, kettle.height);
 
-    // 부유 텍스트
+    // 5. 부유 텍스트
     floatingTexts.forEach(ft => {
       ctx.save();
       ctx.globalAlpha = Math.max(0, ft.opacity);
       ctx.fillStyle = ft.color;
-      ctx.font = 'bold 18px -apple-system, sans-serif';
+      ctx.font = 'bold 17px -apple-system, sans-serif';
+      ctx.shadowColor = 'rgba(0,0,0,0.6)';
+      ctx.shadowBlur = 4;
       ctx.textAlign = 'center';
       ctx.fillText(ft.text, ft.x, ft.y);
       ctx.restore();
     });
 
     requestAnimationFrame(draw);
+  }
+
+  // 구세군 자선냄비 그래픽 드로잉 함수
+  function drawRedKettle(x, y, w, h) {
+    ctx.save();
+    
+    // 자선냄비 삼각대 (거치대 프레임)
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(x + 10, y + h + 8);
+    ctx.lineTo(x + w / 2, y + 2);
+    ctx.lineTo(x + w - 10, y + h + 8);
+    ctx.stroke();
+
+    // 상단 걸이 체인
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(x + w / 2, y + 2);
+    ctx.lineTo(x + w / 2, y + 16);
+    ctx.stroke();
+
+    // 냄비 본체 (빨간 자선냄비)
+    const potX = x + 8;
+    const potY = y + 16;
+    const potW = w - 16;
+    const potH = h - 22;
+
+    ctx.fillStyle = '#dc2626'; // 구세군 시그니처 레드
+    ctx.beginPath();
+    ctx.roundRect(potX, potY, potW, potH, [4, 4, 16, 16]);
+    ctx.fill();
+
+    // 냄비 테두리 & 입구 라인
+    ctx.fillStyle = '#b91c1c';
+    ctx.fillRect(potX - 3, potY - 2, potW + 6, 6);
+
+    // 자선냄비 손잡이 귀
+    ctx.strokeStyle = '#7f1d1d';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(potX - 5, potY + 8, 4, 10);
+    ctx.strokeRect(potX + potW + 1, potY + 8, 4, 10);
+
+    // 자선냄비 로고 텍스트 & 종 마크
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '900 12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('구세군', potX + potW / 2, potY + potH / 2 - 2);
+
+    ctx.font = '14px sans-serif';
+    ctx.fillText('🔔', potX + potW / 2, potY + potH / 2 + 13);
+
+    ctx.restore();
   }
 
   function gameLoop() {
@@ -524,12 +714,14 @@
   const startScreen = document.getElementById('start-screen');
   const gameoverScreen = document.getElementById('gameover-screen');
   const hudScore = document.getElementById('hud-score');
+  const hudTimer = document.getElementById('hud-timer');
   const hudLives = document.getElementById('hud-lives');
   const soundBtn = document.getElementById('sound-btn');
   const toast = document.getElementById('toast');
 
   function updateHUD() {
     hudScore.textContent = `🪙 ${score.toLocaleString()}원`;
+    hudTimer.textContent = `⏱️ ${timeLeft}초`;
     hudLives.textContent = '❤️'.repeat(Math.max(0, lives));
   }
 
@@ -537,17 +729,30 @@
     initAudio();
     score = 0;
     lives = 3;
+    timeLeft = GAME_DURATION;
     items = [];
     floatingTexts = [];
-    basket.x = canvas.width / 2 - basket.width / 2;
+    kettle.x = canvas.width / 2 - kettle.width / 2;
     isPlaying = true;
     updateHUD();
+
     startScreen.classList.add('hidden');
     gameoverScreen.classList.add('hidden');
+
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      if (!isPlaying) return;
+      timeLeft--;
+      updateHUD();
+      if (timeLeft <= 0) {
+        endGame();
+      }
+    }, 1000);
   }
 
   function endGame() {
     isPlaying = false;
+    if (timerInterval) clearInterval(timerInterval);
     playSound('gameover');
     saveHighScore(score);
 
@@ -570,13 +775,13 @@
     if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
   });
 
-  // 터치/마우스 핸들러 (컨테이너 기준 좌표 환산)
+  // 모바일 터치 / 마우스 제어
   function handlePointer(clientX) {
     if (!isPlaying) return;
     const rect = canvas.getBoundingClientRect();
     const scale = canvas.width / rect.width;
     const canvasX = (clientX - rect.left) * scale;
-    basket.x = canvasX - basket.width / 2;
+    kettle.x = canvasX - kettle.width / 2;
   }
 
   canvas.addEventListener('mousemove', (e) => handlePointer(e.clientX));
@@ -585,7 +790,7 @@
     e.preventDefault();
   }, { passive: false });
 
-  // 버튼 이벤트
+  // 버튼 리스너
   document.getElementById('start-btn').addEventListener('click', startGame);
   document.getElementById('restart-btn').addEventListener('click', startGame);
 
@@ -594,9 +799,9 @@
     soundBtn.textContent = soundEnabled ? '🔊' : '🔇';
   });
 
-  // 𝕏 (트위터) 공유 연동
+  // 𝕏 (트위터) 공유
   document.getElementById('twitter-share-btn').addEventListener('click', () => {
-    const text = `🐷 [골든 피기] 저금통에 ${score.toLocaleString()}원을 모았습니다! 기록을 깰 수 있나요?`;
+    const text = `🔔 [구세군 자선냄비] 45초 동안 총 ${score.toLocaleString()}원의 사랑을 모았습니다! 함께 따뜻한 마음을 모아주세요.`;
     const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`;
     window.open(shareUrl, '_blank');
   });
