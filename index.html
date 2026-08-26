@@ -7,7 +7,7 @@
   <title>구세군 자선냄비: 사랑의 모금 게임</title>
   <meta property="og:type" content="website">
   <meta property="og:title" content="구세군 자선냄비: 사랑의 모금 게임">
-  <meta property="og:description" content="따뜻한 마음을 모아주세요! 45초 동안 자선냄비에 기부금을 받아 최고 기록을 달성해보세요.">
+  <meta property="og:description" content="따뜻한 마음을 모아주세요! 45초 동안 얼음을 피해 자선냄비에 기부금을 모아보세요.">
 
   <style>
     * {
@@ -58,28 +58,27 @@
       top: 0;
       left: 0;
       right: 0;
-      padding: 12px 14px;
+      padding: 14px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       z-index: 10;
       pointer-events: none;
-      gap: 6px;
     }
 
     .top-pill {
       background: rgba(15, 23, 42, 0.7);
       border: 1px solid rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(8px);
-      padding: 6px 12px;
+      padding: 6px 14px;
       border-radius: 20px;
       color: white;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       font-weight: 700;
       pointer-events: auto;
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
     }
 
     .top-pill.timer {
@@ -91,8 +90,8 @@
       background: rgba(15, 23, 42, 0.7);
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: white;
-      font-size: 1rem;
-      padding: 6px 10px;
+      font-size: 1.05rem;
+      padding: 6px 12px;
       border-radius: 50%;
       cursor: pointer;
       pointer-events: auto;
@@ -250,14 +249,11 @@
 <body>
 
 <div id="app-container">
-  <!-- 상단 HUD 바 -->
+  <!-- 상단 HUD 바 (스코어, 타이머, 사운드) -->
   <div id="top-bar">
     <div class="top-pill" id="hud-score">🪙 0원</div>
     <div class="top-pill timer" id="hud-timer">⏱️ 45초</div>
-    <div style="display: flex; gap: 6px; align-items: center;">
-      <div class="top-pill" id="hud-lives">❤️❤️❤️</div>
-      <button class="icon-btn" id="sound-btn">🔊</button>
-    </div>
+    <button class="icon-btn" id="sound-btn">🔊</button>
   </div>
 
   <!-- 메인 캔버스 -->
@@ -270,8 +266,9 @@
     <div class="game-desc-box">
       <p class="game-desc">
         ❄️ 좌우로 움직여 떨어지는 후원금을 받아주세요!<br>
-        🧊 <b>15초 이후</b>부터 얼음이 쏟아지고 속도가 빨라집니다.<br>
-        🎁 <b>30초 이상 생존 시</b> 대박 후원금(5,000원)이 등장합니다!
+        🧊 <b>얼음(눈덩이)에 닿으면 즉시 탈락!</b><br>
+        ⚡ <b>15초 이후</b>부터 낙하 속도와 얼음 빈도가 증가합니다.<br>
+        🎁 <b>30초 이상 버티면</b> 대박 후원금(5,000원) 등장!
       </p>
       <div class="game-notice">
         📌 점수 달성 후 해당 멘션 밑에 캡쳐 화면을 보여주세요.
@@ -338,14 +335,14 @@
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
       osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(220, now);
-      osc.frequency.exponentialRampToValueAtTime(40, now + 0.25);
-      gain.gain.setValueAtTime(0.3, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+      osc.frequency.setValueAtTime(240, now);
+      osc.frequency.exponentialRampToValueAtTime(30, now + 0.35);
+      gain.gain.setValueAtTime(0.35, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
       osc.connect(gain);
       gain.connect(audioCtx.destination);
       osc.start(now);
-      osc.stop(now + 0.25);
+      osc.stop(now + 0.35);
     } else if (type === 'gameover') {
       const notes = [523.25, 659.25, 783.99, 1046.50];
       notes.forEach((freq, idx) => {
@@ -374,7 +371,6 @@
   let timerInterval = null;
 
   let score = 0;
-  let lives = 3;
   let isPlaying = false;
   let frame = 0;
   let items = [];
@@ -391,7 +387,7 @@
 
   const keys = { ArrowLeft: false, ArrowRight: false, a: false, d: false };
 
-  // 눈송이 입자 생성
+  // 눈송이 배경 입자
   for (let i = 0; i < 45; i++) {
     snowflakes.push({
       x: Math.random() * 400,
@@ -412,11 +408,9 @@
     }
   }
 
-  /* ----------------------------------------------------
-     난이도 & 아이템 스폰 밸런스 로직
-  ---------------------------------------------------- */
+  /* 난이도 & 아이템 스폰 밸런스 */
   function spawnItem() {
-    const elapsed = GAME_DURATION - timeLeft; // 게임 경과 시간 (0 ~ 45초)
+    const elapsed = GAME_DURATION - timeLeft; // 0 ~ 45초
     const rand = Math.random();
 
     let type = '100';
@@ -425,14 +419,13 @@
     let color = '#fbbf24';
     let baseSpeed = 3.6;
 
-    // 15초 이후부터 속도 점진적 상승
+    // 15초 이후부터 낙하 속도 상승
     if (elapsed > 15) {
-      baseSpeed += (elapsed - 15) * 0.18; // 45초 도달 시 약 +5.4 추가 속도
+      baseSpeed += (elapsed - 15) * 0.18;
     }
 
-    // 시간 구간별 얼음 확률 및 5000원 등장 조건 설정
     if (elapsed < 15) {
-      // [1구간: 0~15초] 평화로운 초반 모금
+      // [1구간: 0~15초] 평화로운 초반 (얼음 12%)
       if (rand < 0.12) {
         type = 'ice';
         value = -1;
@@ -455,8 +448,8 @@
         color = '#60a5fa';
       }
     } else if (elapsed < 30) {
-      // [2구간: 15~30초] 난이도 상승 (얼음 확률 증가 & 빨라짐)
-      const iceChance = 0.15 + ((elapsed - 15) / 15) * 0.13; // 15% -> 28%
+      // [2구간: 15~30초] 난이도 상승 (얼음 15% -> 28%)
+      const iceChance = 0.15 + ((elapsed - 15) / 15) * 0.13;
       if (rand < iceChance) {
         type = 'ice';
         value = -1;
@@ -480,7 +473,7 @@
         color = '#60a5fa';
       }
     } else {
-      // [3구간: 30~45초] 피버 & 최고 난이도 (얼음 35% + 5000원 대박 후원금 등장!)
+      // [3구간: 30~45초] 피버 구간 (얼음 35% + 5000원 등장)
       if (rand < 0.35) {
         type = 'ice';
         value = -1;
@@ -488,7 +481,7 @@
         color = '#93c5fd';
         baseSpeed += 1.2;
       } else if (rand < 0.52) {
-        type = '5000'; // 30초 이후 대박 후원 등장!
+        type = '5000';
         value = 5000;
         radius = 26;
         color = '#f59e0b';
@@ -556,7 +549,7 @@
 
     kettle.x = Math.max(0, Math.min(canvas.width - kettle.width, kettle.x));
 
-    // 시간 경과에 따라 스폰 간격 단축 (36프레임 -> 최저 20프레임)
+    // 시간 경과에 따라 스폰 주기 단축
     const elapsed = GAME_DURATION - timeLeft;
     const currentSpawnRate = Math.max(20, Math.floor(36 - (elapsed / 45) * 16));
 
@@ -571,13 +564,11 @@
 
       if (checkCollision(it, kettle)) {
         if (it.type === 'ice') {
-          lives--;
+          // 얼음 맞을 시 즉시 사망
           playSound('hit');
-          floatingTexts.push({ text: '❄️ 얼음! -1', x: it.x, y: it.y, color: '#93c5fd', opacity: 1, life: 30 });
-          if (lives <= 0) {
-            endGame();
-            return;
-          }
+          items.splice(i, 1);
+          endGame();
+          return;
         } else {
           score += it.value;
           if (it.type === '5000') {
@@ -630,7 +621,7 @@
     ctx.ellipse(200, 725, 260, 60, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // 3. 떨어지는 아이템 렌더링
+    // 3. 떨어지는 아이템
     items.forEach(it => {
       ctx.save();
       ctx.beginPath();
@@ -638,10 +629,9 @@
       ctx.fillStyle = it.color;
       ctx.fill();
       ctx.lineWidth = it.type === '5000' ? 3.5 : 2.5;
-      ctx.strokeStyle = it.type === 'ice' ? '#3b82f6' : (it.type === '5000' ? '#b45309' : '#b45309');
+      ctx.strokeStyle = it.type === 'ice' ? '#3b82f6' : '#b45309';
       ctx.stroke();
 
-      // 5000원 특별 반짝임 효과
       if (it.type === '5000') {
         ctx.fillStyle = '#78350f';
         ctx.font = '900 13px -apple-system, sans-serif';
@@ -745,19 +735,16 @@
   const gameoverScreen = document.getElementById('gameover-screen');
   const hudScore = document.getElementById('hud-score');
   const hudTimer = document.getElementById('hud-timer');
-  const hudLives = document.getElementById('hud-lives');
   const soundBtn = document.getElementById('sound-btn');
 
   function updateHUD() {
     hudScore.textContent = `🪙 ${score.toLocaleString()}원`;
     hudTimer.textContent = `⏱️ ${timeLeft}초`;
-    hudLives.textContent = '❤️'.repeat(Math.max(0, lives));
   }
 
   function startGame() {
     initAudio();
     score = 0;
-    lives = 3;
     timeLeft = GAME_DURATION;
     items = [];
     floatingTexts = [];
