@@ -276,11 +276,11 @@
 
 <script>
   /* ----------------------------------------------------
-     0. 내 컴퓨터 이미지 경로 설정
+     0. 이미지 경로 설정
   ---------------------------------------------------- */
   const IMAGE_PATHS = {
-    kettle: 'ivan.png',         // 쉼표 추가 완료
-    ice: 'ice.png',
+    kettle: 'ivan.png',         // 캐릭터/모금함 이미지
+    ice: 'ice.png',             // 얼음 이미지
     coin100: 'coin100.png',
     coin500: 'coin500.png',
     coin1000: 'coin1000.png',
@@ -386,13 +386,30 @@
   let floatingTexts = [];
   let snowflakes = [];
 
+  // 모금함 기본 설정 (가로 크기 기준: 85px)
+  const kettleTargetWidth = 85; 
+  const groundY = 660; // 바닥 기준 높이
+
   const kettle = {
     x: 160,
-    y: 590,
-    width: 80,
-    height: 70,
+    y: 580,
+    width: 85,
+    height: 80,
     speed: 8
   };
+
+  // kettle 원본 비율 맞춤 함수
+  function syncKettleRatio() {
+    if (isImgLoaded(images.kettle)) {
+      const img = images.kettle;
+      const ratio = img.naturalHeight / img.naturalWidth;
+      kettle.width = kettleTargetWidth;
+      kettle.height = kettleTargetWidth * ratio;
+      kettle.y = groundY - kettle.height;
+    }
+  }
+
+  images.kettle.onload = syncKettleRatio;
 
   const keys = { ArrowLeft: false, ArrowRight: false, a: false, d: false };
 
@@ -523,6 +540,8 @@
   }
 
   function update() {
+    syncKettleRatio();
+
     snowflakes.forEach(snow => {
       snow.y += snow.speedY;
       snow.x += snow.speedX;
@@ -647,7 +666,7 @@
       ctx.restore();
     });
 
-    // 모금함 렌더링 (중괄호 및 키 참조 수정 완료)
+    // kettle 원본 비율 렌더링
     if (isImgLoaded(images.kettle)) {
       ctx.drawImage(images.kettle, kettle.x, kettle.y, kettle.width, kettle.height);
     } else {
@@ -739,6 +758,7 @@
 
   function startGame() {
     initAudio();
+    syncKettleRatio();
     score = 0;
     timeLeft = GAME_DURATION;
     items = [];
