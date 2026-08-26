@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  
+  <!-- SEO & 오픈그래프(카카오톡, X/트위터, 디스코드 링크 미리보기) -->
+  <title>골든 피기: 동전 받기 게임</title>
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="골든 피기: 동전 받기 게임">
+  <meta property="og:description" content="떨어지는 동전을 받아 최고 저금액 기록을 세워보세요!">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="골든 피기: 동전 받기 게임">
+  <meta name="twitter:description" content="떨어지는 동전을 받아 최고 저금액 기록을 세워보세요!">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    body {
+      background-color: #0f172a;
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", Roboto, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+      color: #333;
+    }
+
+    /* 모바일 앱 뷰포트 컨테이너 */
+    #app-container {
+      position: relative;
+      width: 100vw;
+      max-width: 440px;
+      height: 100vh;
+      max-height: 820px;
+      background: #0284c7;
+      border-radius: 0px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (min-width: 480px) {
+      #app-container {
+        border-radius: 24px;
+        height: 90vh;
+      }
+    }
+
+    /* 상단 유틸리티 바 */
+    #top-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .top-pill {
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(6px);
+      padding: 6px 14px;
+      border-radius: 20px;
+      color: white;
+      font-size: 0.95rem;
+      font-weight: 700;
+      pointer-events: auto;
+    }
+
+    .icon-btn {
+      background: rgba(0, 0, 0, 0.45);
+      border: none;
+      color: white;
+      font-size: 1.1rem;
+      padding: 6px 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+
+    /* 캔버스 게임 화면 */
+    #gameCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      background: linear-gradient(180deg, #38bdf8 0%, #0369a1 100%);
+    }
+
+    /* UI 오버레이 (시작화면, 결과화면) */
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      text-align: center;
+      z-index: 20;
+      transition: opacity 0.2s ease;
+    }
+
+    .overlay.hidden {
+      display: none;
+    }
+
+    .game-logo {
+      font-size: 72px;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 6px 12px rgba(0,0,0,0.3));
+      animation: bounce 1.8s infinite ease-in-out;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    .game-title {
+      font-size: 2rem;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .game-desc {
+      font-size: 0.95rem;
+      color: #cbd5e1;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .btn {
+      background: #fbbf24;
+      color: #78350f;
+      border: none;
+      font-size: 1.15rem;
+      font-weight: 800;
+      padding: 14px 36px;
+      border-radius: 9999px;
+      cursor: pointer;
+      box-shadow: 0 6px 0 #b45309, 0 10px 15px rgba(0,0,0,0.3);
+      transition: all 0.1s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #b45309;
+    }
+
+    .btn-secondary {
+      background: #334155;
+      color: #f1f5f9;
+      box-shadow: 0 4px 0 #1e293b;
+      font-size: 0.95rem;
+      padding: 10px 20px;
+    }
+
+    .btn-secondary:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #1e293b;
+    }
+
+    /* 결과 모달 카드 */
+    .result-card {
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      width: 100%;
+      max-width: 320px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+      margin-bottom: 18px;
+    }
+
+    .result-title {
+      font-size: 1.1rem;
+      color: #64748b;
+      font-weight: 700;
+    }
+
+    .result-score {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #0284c7;
+      margin: 8px 0;
+    }
+
+    .result-best {
+      font-size: 0.85rem;
+      color: #f59e0b;
+      font-weight: 700;
+      background: #fef3c7;
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 8px;
+    }
+
+    .share-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    /* 토스트 알림 */
+    #toast {
+      position: absolute;
+      bottom: 24px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+      z-index: 50;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app-container">
+  <!-- 상단 HUD 바 -->
+  <div id="top-bar">
+    <div class="top-pill" id="hud-score">🪙 0원</div>
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <div class="top-pill" id="hud-lives">❤️❤️❤️</div>
+      <button class="icon-btn" id="sound-btn">🔊</button>
+    </div>
+  </div>
+
+  <!-- 메인 캔버스 -->
+  <canvas id="gameCanvas" width="400" height="700"></canvas>
+
+  <!-- 1. 시작 화면 오버레이 -->
+  <div class="overlay" id="start-screen">
+    <div class="game-logo">🐷</div>
+    <h1 class="game-title">골든 피기</h1>
+    <p class="game-desc">
+      좌우로 움직여 떨어지는 동전을 받으세요!<br>
+      💣 폭탄을 피하고 최고 금액을 저금해보세요.
+    </p>
+    <button class="btn" id="start-btn">게임 시작 🎮</button>
+  </div>
+
+  <!-- 2. 게임오버 화면 오버레이 -->
+  <div class="overlay hidden" id="gameover-screen">
+    <div class="result-card">
+      <div class="result-title">최종 저금액</div>
+      <div class="result-score" id="final-score">0원</div>
+      <div class="result-best" id="best-score-label">👑 최고 기록: 0원</div>
+      
+      <div class="share-group">
+        <button class="btn btn-secondary" style="flex:1;" id="twitter-share-btn">𝕏 공유</button>
+        <button class="btn btn-secondary" style="flex:1;" id="copy-link-btn">🔗 복사</button>
+      </div>
+    </div>
+    <button class="btn" id="restart-btn">다시 하기 🔄</button>
+  </div>
+
+  <!-- 링크 복사 토스트 메시지 -->
+  <div id="toast">링크가 복사되었습니다!</div>
+</div>
+
+<script>
+  /* ----------------------------------------------------
+     1. 사운드 시스템 (Web Audio API - 무외부 파일 합성)
+  ---------------------------------------------------- */
+  let audioCtx = null;
+  let soundEnabled = true;
+
+  function initAudio() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+  }
+
+  function playSound(type) {
+    if (!soundEnabled || !audioCtx) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    const now = audioCtx.currentTime;
+
+    if (type === 'coin') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(987.77, now); // B5
+      osc.frequency.exponentialRampToValueAtTime(1318.51, now + 0.12); // E6
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+      osc.start(now);
+      osc.stop(now + 0.12);
+    } else if (type === 'bomb') {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(160, now);
+      osc.frequency.exponentialRampToValueAtTime(30, now + 0.3);
+      gain.gain.setValueAtTime(0.3, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+      osc.start(now);
+      osc.stop(now + 0.3);
+    } else if (type === 'gameover') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(440, now);
+      osc.frequency.setValueAtTime(370, now + 0.15);
+      osc.frequency.setValueAtTime(311, now + 0.3);
+      gain.gain.setValueAtTime(0.25, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+      osc.start(now);
+      osc.stop(now + 0.6);
+    }
+  }
+
+  /* ----------------------------------------------------
+     2. 게임 상태 & 캔버스 로직
+  ---------------------------------------------------- */
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+
+  let score = 0;
+  let lives = 3;
+  let isPlaying = false;
+  let frame = 0;
+  let items = [];
+  let floatingTexts = [];
+
+  const basket = {
+    x: 160,
+    y: 600,
+    width: 75,
+    height: 60,
+    speed: 7,
+    emoji: '🐷'
+  };
+
+  const keys = { ArrowLeft: false, ArrowRight: false, a: false, d: false };
+
+  // 최고 기록 로컬스토리지
+  function getHighScore() {
+    return parseInt(localStorage.getItem('piggy_highscore') || '0', 10);
+  }
+
+  function saveHighScore(val) {
+    if (val > getHighScore()) {
+      localStorage.setItem('piggy_highscore', val);
+    }
+  }
+
+  function spawnItem() {
+    const rand = Math.random();
+    let type = '100';
+    let value = 100;
+    let radius = 17;
+    let color = '#fbbf24';
+    let speed = 3.5 + Math.min(score / 5000, 3.5);
+
+    if (rand < 0.16) {
+      type = 'bomb';
+      value = -1;
+      radius = 18;
+      color = '#ef4444';
+      speed += 1.2;
+    } else if (rand < 0.42) {
+      type = '500';
+      value = 500;
+      radius = 20;
+      color = '#e2e8f0';
+    } else if (rand < 0.50) {
+      type = '1000';
+      value = 1000;
+      radius = 23;
+      color = '#38bdf8';
+    }
+
+    items.push({
+      x: Math.random() * (canvas.width - radius * 2) + radius,
+      y: -radius,
+      radius,
+      type,
+      value,
+      color,
+      speed
+    });
+  }
+
+  function checkCollision(circle, rect) {
+    const closestX = Math.max(rect.x, Math.min(circle.x, rect.x + rect.width));
+    const closestY = Math.max(rect.y, Math.min(circle.y, rect.y + rect.height));
+    const distX = circle.x - closestX;
+    const distY = circle.y - closestY;
+    return (distX * distX + distY * distY) < (circle.radius * circle.radius);
+  }
+
+  function update() {
+    if (!isPlaying) return;
+    frame++;
+
+    // 키보드 조작
+    if (keys.ArrowLeft || keys.a) basket.x -= basket.speed;
+    if (keys.ArrowRight || keys.d) basket.x += basket.speed;
+
+    // 경계 제약
+    basket.x = Math.max(0, Math.min(canvas.width - basket.width, basket.x));
+
+    // 아이템 스폰 (점수가 높을수록 빈도 증가)
+    const spawnRate = Math.max(22, 38 - Math.floor(score / 3000));
+    if (frame % spawnRate === 0) spawnItem();
+
+    // 아이템 이동 및 충돌
+    for (let i = items.length - 1; i >= 0; i--) {
+      const it = items[i];
+      it.y += it.speed;
+
+      if (checkCollision(it, basket)) {
+        if (it.type === 'bomb') {
+          lives--;
+          playSound('bomb');
+          floatingTexts.push({ text: '💥 -1', x: it.x, y: it.y, color: '#f87171', opacity: 1, life: 30 });
+          if (lives <= 0) {
+            endGame();
+            return;
+          }
+        } else {
+          score += it.value;
+          playSound('coin');
+          floatingTexts.push({ text: `+${it.value}`, x: it.x, y: it.y, color: '#fde047', opacity: 1, life: 25 });
+        }
+        updateHUD();
+        items.splice(i, 1);
+        continue;
+      }
+
+      if (it.y - it.radius > canvas.height) {
+        items.splice(i, 1);
+      }
+    }
+
+    // 부유 텍스트
+    for (let i = floatingTexts.length - 1; i >= 0; i--) {
+      const ft = floatingTexts[i];
+      ft.y -= 1.8;
+      ft.opacity -= 1 / ft.life;
+      if (ft.opacity <= 0) floatingTexts.splice(i, 1);
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 구름 배경 효과
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.beginPath();
+    ctx.arc(80, 120, 45, 0, Math.PI * 2);
+    ctx.arc(130, 110, 55, 0, Math.PI * 2);
+    ctx.arc(180, 120, 40, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 아이템 렌더링
+    items.forEach(it => {
+      ctx.beginPath();
+      ctx.arc(it.x, it.y, it.radius, 0, Math.PI * 2);
+      ctx.fillStyle = it.color;
+      ctx.fill();
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = it.type === 'bomb' ? '#991b1b' : '#b45309';
+      ctx.stroke();
+
+      ctx.fillStyle = it.type === 'bomb' ? '#fff' : '#78350f';
+      ctx.font = 'bold 13px -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(it.type === 'bomb' ? '💣' : it.type, it.x, it.y);
+    });
+
+    // 돼지 저금통 렌더링
+    ctx.font = '54px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(basket.emoji, basket.x + basket.width / 2, basket.y + basket.height / 2);
+
+    // 부유 텍스트
+    floatingTexts.forEach(ft => {
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, ft.opacity);
+      ctx.fillStyle = ft.color;
+      ctx.font = 'bold 18px -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(ft.text, ft.x, ft.y);
+      ctx.restore();
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  function gameLoop() {
+    update();
+    setTimeout(gameLoop, 1000 / 60);
+  }
+
+  /* ----------------------------------------------------
+     3. 인터랙션 및 UI 제어
+  ---------------------------------------------------- */
+  const startScreen = document.getElementById('start-screen');
+  const gameoverScreen = document.getElementById('gameover-screen');
+  const hudScore = document.getElementById('hud-score');
+  const hudLives = document.getElementById('hud-lives');
+  const soundBtn = document.getElementById('sound-btn');
+  const toast = document.getElementById('toast');
+
+  function updateHUD() {
+    hudScore.textContent = `🪙 ${score.toLocaleString()}원`;
+    hudLives.textContent = '❤️'.repeat(Math.max(0, lives));
+  }
+
+  function startGame() {
+    initAudio();
+    score = 0;
+    lives = 3;
+    items = [];
+    floatingTexts = [];
+    basket.x = canvas.width / 2 - basket.width / 2;
+    isPlaying = true;
+    updateHUD();
+    startScreen.classList.add('hidden');
+    gameoverScreen.classList.add('hidden');
+  }
+
+  function endGame() {
+    isPlaying = false;
+    playSound('gameover');
+    saveHighScore(score);
+
+    document.getElementById('final-score').textContent = `${score.toLocaleString()}원`;
+    document.getElementById('best-score-label').textContent = `👑 최고 기록: ${getHighScore().toLocaleString()}원`;
+    gameoverScreen.classList.remove('hidden');
+  }
+
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.style.opacity = '1';
+    setTimeout(() => { toast.style.opacity = '0'; }, 1800);
+  }
+
+  // 조작 핸들러
+  window.addEventListener('keydown', (e) => {
+    if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
+  });
+  window.addEventListener('keyup', (e) => {
+    if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
+  });
+
+  // 터치/마우스 핸들러 (컨테이너 기준 좌표 환산)
+  function handlePointer(clientX) {
+    if (!isPlaying) return;
+    const rect = canvas.getBoundingClientRect();
+    const scale = canvas.width / rect.width;
+    const canvasX = (clientX - rect.left) * scale;
+    basket.x = canvasX - basket.width / 2;
+  }
+
+  canvas.addEventListener('mousemove', (e) => handlePointer(e.clientX));
+  canvas.addEventListener('touchmove', (e) => {
+    handlePointer(e.touches[0].clientX);
+    e.preventDefault();
+  }, { passive: false });
+
+  // 버튼 이벤트
+  document.getElementById('start-btn').addEventListener('click', startGame);
+  document.getElementById('restart-btn').addEventListener('click', startGame);
+
+  soundBtn.addEventListener('click', () => {
+    soundEnabled = !soundEnabled;
+    soundBtn.textContent = soundEnabled ? '🔊' : '🔇';
+  });
+
+  // 𝕏 (트위터) 공유 연동
+  document.getElementById('twitter-share-btn').addEventListener('click', () => {
+    const text = `🐷 [골든 피기] 저금통에 ${score.toLocaleString()}원을 모았습니다! 기록을 깰 수 있나요?`;
+    const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`;
+    window.open(shareUrl, '_blank');
+  });
+
+  // 링크 복사
+  document.getElementById('copy-link-btn').addEventListener('click', () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      showToast('게임 링크가 복사되었습니다!');
+    });
+  });
+
+  // 실행
+  draw();
+  gameLoop();
+</script>
+</body>
+</html>
