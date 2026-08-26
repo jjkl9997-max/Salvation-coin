@@ -204,7 +204,7 @@
     .result-card {
       background: white;
       border-radius: 22px;
-      padding: 26px 20px;
+      padding: 28px 20px;
       width: 100%;
       max-width: 320px;
       box-shadow: 0 16px 32px rgba(0,0,0,0.4);
@@ -218,21 +218,10 @@
     }
 
     .result-score {
-      font-size: 2.2rem;
+      font-size: 2.3rem;
       font-weight: 900;
       color: #dc2626;
-      margin: 8px 0;
-    }
-
-    .result-best {
-      font-size: 0.88rem;
-      color: #b45309;
-      font-weight: 700;
-      background: #fef3c7;
-      display: inline-block;
-      padding: 5px 14px;
-      border-radius: 8px;
-      margin-bottom: 12px;
+      margin: 10px 0 16px 0;
     }
 
     .result-hint {
@@ -249,7 +238,7 @@
 <body>
 
 <div id="app-container">
-  <!-- 상단 HUD 바 (스코어, 타이머, 사운드) -->
+  <!-- 상단 HUD 바 -->
   <div id="top-bar">
     <div class="top-pill" id="hud-score">🪙 0원</div>
     <div class="top-pill timer" id="hud-timer">⏱️ 45초</div>
@@ -268,7 +257,7 @@
         ❄️ 좌우로 움직여 떨어지는 후원금을 받아주세요!<br>
         🧊 <b>얼음(눈덩이)에 닿으면 즉시 탈락!</b><br>
         ⚡ <b>15초 이후</b>부터 낙하 속도와 얼음 빈도가 증가합니다.<br>
-        🎁 <b>30초 이상 버티면</b> 대박 후원금(5,000원) 등장!
+        🎁 <b>30초 이상 생존 시</b> 대박 후원금(5,000원) 등장!
       </p>
       <div class="game-notice">
         📌 점수 달성 후 해당 멘션 밑에 캡쳐 화면을 보여주세요.
@@ -277,12 +266,11 @@
     <button class="btn" id="start-btn">모금 시작하기 ❤️</button>
   </div>
 
-  <!-- 2. 게임오버 화면 오버레이 -->
+  <!-- 2. 게임오버 화면 오버레이 (최고 기록 제거 완료) -->
   <div class="overlay hidden" id="gameover-screen">
     <div class="result-card">
       <div class="result-title">최종 모금액</div>
       <div class="result-score" id="final-score">0원</div>
-      <div class="result-best" id="best-score-label">👑 최고 기록: 0원</div>
       <div class="result-hint">📸 캡쳐하여 멘션 밑에 인증 화면을 남겨주세요!</div>
     </div>
     <button class="btn" id="restart-btn">다시 기부하기 🔄</button>
@@ -290,6 +278,31 @@
 </div>
 
 <script>
+  /* ----------------------------------------------------
+     0. 내 컴퓨터 이미지 경로 설정
+     (HTML 파일과 같은 폴더에 파일을 두고 파일명을 적어주세요)
+  ---------------------------------------------------- */
+  const IMAGE_PATHS = {
+    kettle: 'kettle.png',       // 자선냄비/바구니 이미지
+    ice: 'ice.png',             // 얼음/눈덩이 장애물 이미지
+    coin100: 'coin100.png',     // 100원 이미지
+    coin500: 'coin500.png',     // 500원 이미지
+    coin1000: 'coin1000.png',   // 1000원 이미지
+    coin5000: 'coin5000.png',   // 5000원 이미지
+    bg: 'bg.png'                // 배경 이미지 (선택사항, 없으면 기본 눈밭 배경)
+  };
+
+  const images = {};
+  for (const [key, src] of Object.entries(IMAGE_PATHS)) {
+    const img = new Image();
+    img.src = src;
+    images[key] = img;
+  }
+
+  function isImgLoaded(img) {
+    return img && img.complete && img.naturalWidth !== 0;
+  }
+
   /* ----------------------------------------------------
      1. 사운드 시스템 (Web Audio API)
   ---------------------------------------------------- */
@@ -316,7 +329,7 @@
       osc1.type = 'sine';
       osc2.type = 'triangle';
       
-      const freq = type === 'special' ? 1567.98 : 1046.50; // G6 or C6
+      const freq = type === 'special' ? 1567.98 : 1046.50;
       osc1.frequency.setValueAtTime(freq, now);
       osc2.frequency.setValueAtTime(freq * 1.5, now);
 
@@ -398,34 +411,23 @@
     });
   }
 
-  function getHighScore() {
-    return parseInt(localStorage.getItem('redkettle_highscore') || '0', 10);
-  }
-
-  function saveHighScore(val) {
-    if (val > getHighScore()) {
-      localStorage.setItem('redkettle_highscore', val);
-    }
-  }
-
   /* 난이도 & 아이템 스폰 밸런스 */
   function spawnItem() {
-    const elapsed = GAME_DURATION - timeLeft; // 0 ~ 45초
+    const elapsed = GAME_DURATION - timeLeft;
     const rand = Math.random();
 
     let type = '100';
     let value = 100;
-    let radius = 17;
+    let radius = 18;
     let color = '#fbbf24';
     let baseSpeed = 3.6;
 
-    // 15초 이후부터 낙하 속도 상승
     if (elapsed > 15) {
       baseSpeed += (elapsed - 15) * 0.18;
     }
 
     if (elapsed < 15) {
-      // [1구간: 0~15초] 평화로운 초반 (얼음 12%)
+      // 0~15초 (얼음 12%)
       if (rand < 0.12) {
         type = 'ice';
         value = -1;
@@ -448,7 +450,7 @@
         color = '#60a5fa';
       }
     } else if (elapsed < 30) {
-      // [2구간: 15~30초] 난이도 상승 (얼음 15% -> 28%)
+      // 15~30초 (얼음 15% -> 28%)
       const iceChance = 0.15 + ((elapsed - 15) / 15) * 0.13;
       if (rand < iceChance) {
         type = 'ice';
@@ -473,7 +475,7 @@
         color = '#60a5fa';
       }
     } else {
-      // [3구간: 30~45초] 피버 구간 (얼음 35% + 5000원 등장)
+      // 30~45초 (얼음 35% + 5000원 등장)
       if (rand < 0.35) {
         type = 'ice';
         value = -1;
@@ -483,7 +485,7 @@
       } else if (rand < 0.52) {
         type = '5000';
         value = 5000;
-        radius = 26;
+        radius = 25;
         color = '#f59e0b';
         baseSpeed += 0.5;
       } else if (rand < 0.72) {
@@ -530,7 +532,6 @@
   }
 
   function update() {
-    // 배경 눈 내리기
     snowflakes.forEach(snow => {
       snow.y += snow.speedY;
       snow.x += snow.speedX;
@@ -549,7 +550,6 @@
 
     kettle.x = Math.max(0, Math.min(canvas.width - kettle.width, kettle.x));
 
-    // 시간 경과에 따라 스폰 주기 단축
     const elapsed = GAME_DURATION - timeLeft;
     const currentSpawnRate = Math.max(20, Math.floor(36 - (elapsed / 45) * 16));
 
@@ -564,7 +564,6 @@
 
       if (checkCollision(it, kettle)) {
         if (it.type === 'ice') {
-          // 얼음 맞을 시 즉시 사망
           playSound('hit');
           items.splice(i, 1);
           endGame();
@@ -601,6 +600,11 @@
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // 0. 사용자 배경 이미지 (있을 경우 렌더링)
+    if (isImgLoaded(images.bg)) {
+      ctx.drawImage(images.bg, 0, 0, canvas.width, canvas.height);
+    }
+
     // 1. 눈송이
     ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
     snowflakes.forEach(snow => {
@@ -609,47 +613,64 @@
       ctx.fill();
     });
 
-    // 2. 바닥 눈밭 언덕
-    ctx.fillStyle = '#e2e8f0';
-    ctx.beginPath();
-    ctx.ellipse(120, 710, 240, 60, 0, 0, Math.PI * 2);
-    ctx.ellipse(320, 715, 200, 55, 0, 0, Math.PI * 2);
-    ctx.fill();
+    // 2. 바닥 눈밭 언덕 (배경 이미지가 없을 때 주로 표시)
+    if (!isImgLoaded(images.bg)) {
+      ctx.fillStyle = '#e2e8f0';
+      ctx.beginPath();
+      ctx.ellipse(120, 710, 240, 60, 0, 0, Math.PI * 2);
+      ctx.ellipse(320, 715, 200, 55, 0, 0, Math.PI * 2);
+      ctx.fill();
 
-    ctx.fillStyle = '#f8fafc';
-    ctx.beginPath();
-    ctx.ellipse(200, 725, 260, 60, 0, 0, Math.PI * 2);
-    ctx.fill();
+      ctx.fillStyle = '#f8fafc';
+      ctx.beginPath();
+      ctx.ellipse(200, 725, 260, 60, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
-    // 3. 떨어지는 아이템
+    // 3. 떨어지는 아이템 (사용자 이미지 우선, 없으면 기본 그래픽)
     items.forEach(it => {
       ctx.save();
-      ctx.beginPath();
-      ctx.arc(it.x, it.y, it.radius, 0, Math.PI * 2);
-      ctx.fillStyle = it.color;
-      ctx.fill();
-      ctx.lineWidth = it.type === '5000' ? 3.5 : 2.5;
-      ctx.strokeStyle = it.type === 'ice' ? '#3b82f6' : '#b45309';
-      ctx.stroke();
+      
+      const imgKey = it.type === 'ice' ? 'ice' : 'coin' + it.type;
+      const targetImg = images[imgKey];
 
-      if (it.type === '5000') {
-        ctx.fillStyle = '#78350f';
-        ctx.font = '900 13px -apple-system, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('5000', it.x, it.y);
+      if (isImgLoaded(targetImg)) {
+        // 내 컴퓨터 이미지로 그리기
+        const size = it.radius * 2.2;
+        ctx.drawImage(targetImg, it.x - size / 2, it.y - size / 2, size, size);
       } else {
-        ctx.fillStyle = it.type === 'ice' ? '#1e3a8a' : '#78350f';
-        ctx.font = 'bold 12px -apple-system, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(it.type === 'ice' ? '❄️' : it.type, it.x, it.y);
+        // 기본 캔버스 드로잉 (폴백)
+        ctx.beginPath();
+        ctx.arc(it.x, it.y, it.radius, 0, Math.PI * 2);
+        ctx.fillStyle = it.color;
+        ctx.fill();
+        ctx.lineWidth = it.type === '5000' ? 3.5 : 2.5;
+        ctx.strokeStyle = it.type === 'ice' ? '#3b82f6' : '#b45309';
+        ctx.stroke();
+
+        if (it.type === '5000') {
+          ctx.fillStyle = '#78350f';
+          ctx.font = '900 13px -apple-system, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('5000', it.x, it.y);
+        } else {
+          ctx.fillStyle = it.type === 'ice' ? '#1e3a8a' : '#78350f';
+          ctx.font = 'bold 12px -apple-system, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(it.type === 'ice' ? '❄️' : it.type, it.x, it.y);
+        }
       }
       ctx.restore();
     });
 
-    // 4. 구세군 자선냄비
-    drawRedKettle(kettle.x, kettle.y, kettle.width, kettle.height);
+    // 4. 모금함 (사용자 이미지 우선, 없으면 기본 냄비 그래픽)
+    if (isImgLoaded(images.kettle)) {
+      ctx.drawImage(images.kettle, kettle.x, kettle.y, kettle.width, kettle.height);
+    } else {
+      drawRedKettle(kettle.x, kettle.y, kettle.width, kettle.height);
+    }
 
     // 5. 부유 텍스트
     floatingTexts.forEach(ft => {
@@ -667,7 +688,7 @@
     requestAnimationFrame(draw);
   }
 
-  // 자선냄비 그래픽
+  // 기본 자선냄비 그래픽 함수 (폴백용)
   function drawRedKettle(x, y, w, h) {
     ctx.save();
     
@@ -700,17 +721,14 @@
     ctx.roundRect(potX, potY, potW, potH, [4, 4, 16, 16]);
     ctx.fill();
 
-    // 냄비 림
     ctx.fillStyle = '#b91c1c';
     ctx.fillRect(potX - 3, potY - 2, potW + 6, 6);
 
-    // 냄비 손잡이
     ctx.strokeStyle = '#7f1d1d';
     ctx.lineWidth = 3;
     ctx.strokeRect(potX - 5, potY + 8, 4, 10);
     ctx.strokeRect(potX + potW + 1, potY + 8, 4, 10);
 
-    // 구세군 텍스트 & 종 마크
     ctx.fillStyle = '#ffffff';
     ctx.font = '900 12px sans-serif';
     ctx.textAlign = 'center';
@@ -770,10 +788,9 @@
     isPlaying = false;
     if (timerInterval) clearInterval(timerInterval);
     playSound('gameover');
-    saveHighScore(score);
 
+    // 최고 기록 저장 및 표기 없이 이번 판 최종 점수만 출력
     document.getElementById('final-score').textContent = `${score.toLocaleString()}원`;
-    document.getElementById('best-score-label').textContent = `👑 최고 기록: ${getHighScore().toLocaleString()}원`;
     gameoverScreen.classList.remove('hidden');
   }
 
