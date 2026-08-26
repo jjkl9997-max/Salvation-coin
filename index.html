@@ -7,7 +7,6 @@
   <title>구세군 자선냄비: 사랑의 모금 게임</title>
   <meta property="og:type" content="website">
   <meta property="og:title" content="구세군 자선냄비: 사랑의 모금 게임">
-  <meta property="og:description" content="따뜻한 마음을 모아주세요! 45초 동안 얼음을 피해 자선냄비에 기부금을 모아보세요.">
 
   <style>
     * {
@@ -254,16 +253,14 @@
     <h1 class="game-title">구세군 자선냄비</h1>
     <div class="game-desc-box">
       <p class="game-desc">
-        ❄️ 좌우로 움직여 떨어지는 후원금을 받아주세요!<br>
+        ❄️ 좌우로 움직여 떨어지는 모금을 받아주세요!<br>
         🧊 <b>얼음(눈덩이)에 닿으면 즉시 탈락!</b><br>
-        ⚡ <b>15초 이후</b>부터 낙하 속도와 얼음 빈도가 증가합니다.<br>
-        🎁 <b>30초 이상 생존 시</b> 대박 후원금(5,000원) 등장!
       </p>
       <div class="game-notice">
         📌 점수 달성 후 해당 멘션 밑에 캡쳐 화면을 보여주세요.
       </div>
     </div>
-    <button class="btn" id="start-btn">모금 시작하기 ❤️</button>
+    <button class="btn" id="start-btn">모금 시작하기</button>
   </div>
 
   <!-- 2. 게임오버 화면 오버레이 (최고 기록 제거 완료) -->
@@ -283,7 +280,7 @@
      (HTML 파일과 같은 폴더에 파일을 두고 파일명을 적어주세요)
   ---------------------------------------------------- */
   const IMAGE_PATHS = {
-    kettle: 'kettle.png',       // 자선냄비/바구니 이미지
+    kettle: 'ivan.png'    // 자선냄비/바구니 이미지
     ice: 'ice.png',             // 얼음/눈덩이 장애물 이미지
     coin100: 'coin100.png',     // 100원 이미지
     coin500: 'coin500.png',     // 500원 이미지
@@ -666,8 +663,8 @@
     });
 
     // 4. 모금함 (사용자 이미지 우선, 없으면 기본 냄비 그래픽)
-    if (isImgLoaded(images.kettle)) {
-      ctx.drawImage(images.kettle, kettle.x, kettle.y, kettle.width, kettle.height);
+    if (isImgLoaded(images.ivan))
+      ctx.drawImage(images.ivan, kettle.x, kettle.y, kettle.width, kettle.height);
     } else {
       drawRedKettle(kettle.x, kettle.y, kettle.width, kettle.height);
     }
