@@ -4,14 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   
-  <!-- SEO & 오픈그래프 -->
   <title>구세군 자선냄비: 사랑의 모금 게임</title>
   <meta property="og:type" content="website">
   <meta property="og:title" content="구세군 자선냄비: 사랑의 모금 게임">
   <meta property="og:description" content="따뜻한 마음을 모아주세요! 45초 동안 자선냄비에 기부금을 받아 최고 기록을 달성해보세요.">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="구세군 자선냄비: 사랑의 모금 게임">
-  <meta name="twitter:description" content="따뜻한 마음을 모아주세요! 45초 동안 자선냄비에 기부금을 받아 최고 기록을 달성해보세요.">
 
   <style>
     * {
@@ -56,7 +52,7 @@
       }
     }
 
-    /* 상단 유틸리티 바 (HUD) */
+    /* 상단 HUD 바 */
     #top-bar {
       position: absolute;
       top: 0;
@@ -72,13 +68,13 @@
     }
 
     .top-pill {
-      background: rgba(15, 23, 42, 0.65);
+      background: rgba(15, 23, 42, 0.7);
       border: 1px solid rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(8px);
-      padding: 6px 10px;
+      padding: 6px 12px;
       border-radius: 20px;
       color: white;
-      font-size: 0.88rem;
+      font-size: 0.9rem;
       font-weight: 700;
       pointer-events: auto;
       display: flex;
@@ -88,10 +84,11 @@
 
     .top-pill.timer {
       color: #fde047;
+      font-variant-numeric: tabular-nums;
     }
 
     .icon-btn {
-      background: rgba(15, 23, 42, 0.65);
+      background: rgba(15, 23, 42, 0.7);
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: white;
       font-size: 1rem;
@@ -164,14 +161,15 @@
     }
 
     .game-desc {
-      font-size: 0.92rem;
+      font-size: 0.9rem;
       color: #cbd5e1;
       line-height: 1.6;
       margin-bottom: 10px;
+      text-align: left;
     }
 
     .game-notice {
-      font-size: 0.88rem;
+      font-size: 0.86rem;
       color: #fde047;
       font-weight: 700;
       line-height: 1.5;
@@ -179,6 +177,7 @@
       border-radius: 10px;
       padding: 8px 10px;
       border: 1px dashed rgba(253, 224, 71, 0.4);
+      text-align: center;
     }
 
     .btn {
@@ -187,7 +186,7 @@
       border: none;
       font-size: 1.15rem;
       font-weight: 800;
-      padding: 14px 36px;
+      padding: 14px 38px;
       border-radius: 9999px;
       cursor: pointer;
       box-shadow: 0 6px 0 #991b1b, 0 10px 18px rgba(220, 38, 38, 0.4);
@@ -202,28 +201,15 @@
       box-shadow: 0 2px 0 #991b1b;
     }
 
-    .btn-secondary {
-      background: #334155;
-      color: #f1f5f9;
-      box-shadow: 0 4px 0 #1e293b;
-      font-size: 0.92rem;
-      padding: 10px 16px;
-    }
-
-    .btn-secondary:active {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 #1e293b;
-    }
-
     /* 결과 모달 카드 */
     .result-card {
       background: white;
       border-radius: 22px;
-      padding: 24px;
+      padding: 26px 20px;
       width: 100%;
       max-width: 320px;
       box-shadow: 0 16px 32px rgba(0,0,0,0.4);
-      margin-bottom: 18px;
+      margin-bottom: 22px;
     }
 
     .result-title {
@@ -233,51 +219,31 @@
     }
 
     .result-score {
-      font-size: 2.1rem;
+      font-size: 2.2rem;
       font-weight: 900;
       color: #dc2626;
       margin: 8px 0;
     }
 
     .result-best {
-      font-size: 0.85rem;
+      font-size: 0.88rem;
       color: #b45309;
       font-weight: 700;
       background: #fef3c7;
       display: inline-block;
-      padding: 4px 12px;
+      padding: 5px 14px;
       border-radius: 8px;
+      margin-bottom: 12px;
     }
 
     .result-hint {
-      margin-top: 12px;
-      font-size: 0.82rem;
-      color: #475569;
+      font-size: 0.84rem;
+      color: #0f172a;
       background: #f1f5f9;
-      padding: 8px;
-      border-radius: 8px;
-      font-weight: 600;
-    }
-
-    .share-group {
-      display: flex;
-      gap: 8px;
-      margin-top: 14px;
-    }
-
-    /* 토스트 알림 */
-    #toast {
-      position: absolute;
-      bottom: 24px;
-      background: rgba(0, 0, 0, 0.85);
-      color: white;
-      padding: 8px 18px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      opacity: 0;
-      transition: opacity 0.25s ease;
-      pointer-events: none;
-      z-index: 50;
+      padding: 10px;
+      border-radius: 10px;
+      font-weight: 700;
+      line-height: 1.4;
     }
   </style>
 </head>
@@ -303,8 +269,9 @@
     <h1 class="game-title">구세군 자선냄비</h1>
     <div class="game-desc-box">
       <p class="game-desc">
-        ❄️ 좌우로 움직여 떨어지는 후원금과 동전을 자선냄비에 받아주세요!<br>
-        🧊 차가운 얼음/눈덩이를 피하고 <b>45초</b> 동안 최대한 많은 성금을 모아보세요.
+        ❄️ 좌우로 움직여 떨어지는 후원금을 받아주세요!<br>
+        🧊 <b>15초 이후</b>부터 얼음이 쏟아지고 속도가 빨라집니다.<br>
+        🎁 <b>30초 이상 생존 시</b> 대박 후원금(5,000원)이 등장합니다!
       </p>
       <div class="game-notice">
         📌 점수 달성 후 해당 멘션 밑에 캡쳐 화면을 보여주세요.
@@ -319,18 +286,10 @@
       <div class="result-title">최종 모금액</div>
       <div class="result-score" id="final-score">0원</div>
       <div class="result-best" id="best-score-label">👑 최고 기록: 0원</div>
-      <div class="result-hint">📸 캡쳐하여 멘션 답글로 인증해주세요!</div>
-      
-      <div class="share-group">
-        <button class="btn btn-secondary" style="flex:1;" id="twitter-share-btn">𝕏 공유</button>
-        <button class="btn btn-secondary" style="flex:1;" id="copy-link-btn">🔗 링크 복사</button>
-      </div>
+      <div class="result-hint">📸 캡쳐하여 멘션 밑에 인증 화면을 남겨주세요!</div>
     </div>
     <button class="btn" id="restart-btn">다시 기부하기 🔄</button>
   </div>
-
-  <!-- 링크 복사 토스트 메시지 -->
-  <div id="toast">링크가 복사되었습니다!</div>
 </div>
 
 <script>
@@ -352,8 +311,7 @@
 
     const now = audioCtx.currentTime;
 
-    if (type === 'bell' || type === 'coin') {
-      // 자선냄비 종소리 (맑은 벨 톤 합성)
+    if (type === 'coin' || type === 'special') {
       const osc1 = audioCtx.createOscillator();
       const osc2 = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
@@ -361,12 +319,12 @@
       osc1.type = 'sine';
       osc2.type = 'triangle';
       
-      const freq = type === 'coin' ? 1046.50 : 1318.51; // C6 or E6
+      const freq = type === 'special' ? 1567.98 : 1046.50; // G6 or C6
       osc1.frequency.setValueAtTime(freq, now);
-      osc2.frequency.setValueAtTime(freq * 2.02, now);
+      osc2.frequency.setValueAtTime(freq * 1.5, now);
 
-      gain.gain.setValueAtTime(0.25, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+      gain.gain.setValueAtTime(type === 'special' ? 0.35 : 0.22, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + (type === 'special' ? 0.35 : 0.22));
 
       osc1.connect(gain);
       osc2.connect(gain);
@@ -374,14 +332,13 @@
 
       osc1.start(now);
       osc2.start(now);
-      osc1.stop(now + 0.25);
-      osc2.stop(now + 0.25);
+      osc1.stop(now + 0.35);
+      osc2.stop(now + 0.35);
     } else if (type === 'hit') {
-      // 장애물 부딪힘 (얼음 깨짐/눈 충돌)
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
       osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(200, now);
+      osc.frequency.setValueAtTime(220, now);
       osc.frequency.exponentialRampToValueAtTime(40, now + 0.25);
       gain.gain.setValueAtTime(0.3, now);
       gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
@@ -390,7 +347,6 @@
       osc.start(now);
       osc.stop(now + 0.25);
     } else if (type === 'gameover') {
-      // 종료 징글
       const notes = [523.25, 659.25, 783.99, 1046.50];
       notes.forEach((freq, idx) => {
         const osc = audioCtx.createOscillator();
@@ -413,7 +369,7 @@
   const canvas = document.getElementById('gameCanvas');
   const ctx = canvas.getContext('2d');
 
-  const GAME_DURATION = 45; // 45초
+  const GAME_DURATION = 45; // 45초 제한
   let timeLeft = GAME_DURATION;
   let timerInterval = null;
 
@@ -425,18 +381,17 @@
   let floatingTexts = [];
   let snowflakes = [];
 
-  // 구세군 자선냄비 오브젝트
   const kettle = {
     x: 160,
     y: 590,
     width: 80,
     height: 70,
-    speed: 7.5
+    speed: 8
   };
 
   const keys = { ArrowLeft: false, ArrowRight: false, a: false, d: false };
 
-  // 눈송이 배경 입자 초기화
+  // 눈송이 입자 생성
   for (let i = 0; i < 45; i++) {
     snowflakes.push({
       x: Math.random() * 400,
@@ -457,36 +412,103 @@
     }
   }
 
+  /* ----------------------------------------------------
+     난이도 & 아이템 스폰 밸런스 로직
+  ---------------------------------------------------- */
   function spawnItem() {
+    const elapsed = GAME_DURATION - timeLeft; // 게임 경과 시간 (0 ~ 45초)
     const rand = Math.random();
+
     let type = '100';
     let value = 100;
     let radius = 17;
     let color = '#fbbf24';
-    let speed = 3.6 + Math.min(score / 8000, 3.2);
+    let baseSpeed = 3.6;
 
-    if (rand < 0.18) {
-      type = 'ice'; // 얼음/눈폭탄
-      value = -1;
-      radius = 19;
-      color = '#93c5fd';
-      speed += 1.0;
-    } else if (rand < 0.50) {
-      type = '500';
-      value = 500;
-      radius = 20;
-      color = '#e2e8f0';
-    } else if (rand < 0.72) {
-      type = '1000';
-      value = 1000;
-      radius = 23;
-      color = '#60a5fa';
-    } else if (rand < 0.82) {
-      type = '5000'; // 고액 후원권
-      value = 5000;
-      radius = 25;
-      color = '#f472b6';
-      speed += 0.5;
+    // 15초 이후부터 속도 점진적 상승
+    if (elapsed > 15) {
+      baseSpeed += (elapsed - 15) * 0.18; // 45초 도달 시 약 +5.4 추가 속도
+    }
+
+    // 시간 구간별 얼음 확률 및 5000원 등장 조건 설정
+    if (elapsed < 15) {
+      // [1구간: 0~15초] 평화로운 초반 모금
+      if (rand < 0.12) {
+        type = 'ice';
+        value = -1;
+        radius = 18;
+        color = '#93c5fd';
+      } else if (rand < 0.65) {
+        type = '100';
+        value = 100;
+        radius = 17;
+        color = '#fbbf24';
+      } else if (rand < 0.90) {
+        type = '500';
+        value = 500;
+        radius = 20;
+        color = '#e2e8f0';
+      } else {
+        type = '1000';
+        value = 1000;
+        radius = 23;
+        color = '#60a5fa';
+      }
+    } else if (elapsed < 30) {
+      // [2구간: 15~30초] 난이도 상승 (얼음 확률 증가 & 빨라짐)
+      const iceChance = 0.15 + ((elapsed - 15) / 15) * 0.13; // 15% -> 28%
+      if (rand < iceChance) {
+        type = 'ice';
+        value = -1;
+        radius = 19;
+        color = '#93c5fd';
+        baseSpeed += 0.8;
+      } else if (rand < iceChance + 0.35) {
+        type = '100';
+        value = 100;
+        radius = 17;
+        color = '#fbbf24';
+      } else if (rand < iceChance + 0.65) {
+        type = '500';
+        value = 500;
+        radius = 20;
+        color = '#e2e8f0';
+      } else {
+        type = '1000';
+        value = 1000;
+        radius = 23;
+        color = '#60a5fa';
+      }
+    } else {
+      // [3구간: 30~45초] 피버 & 최고 난이도 (얼음 35% + 5000원 대박 후원금 등장!)
+      if (rand < 0.35) {
+        type = 'ice';
+        value = -1;
+        radius = 20;
+        color = '#93c5fd';
+        baseSpeed += 1.2;
+      } else if (rand < 0.52) {
+        type = '5000'; // 30초 이후 대박 후원 등장!
+        value = 5000;
+        radius = 26;
+        color = '#f59e0b';
+        baseSpeed += 0.5;
+      } else if (rand < 0.72) {
+        type = '1000';
+        value = 1000;
+        radius = 23;
+        color = '#60a5fa';
+      } else if (rand < 0.88) {
+        type = '500';
+        value = 500;
+        radius = 20;
+        color = '#e2e8f0';
+      } else {
+        type = '100';
+        value = 100;
+        radius = 17;
+        color = '#fbbf24';
+      }
     }
 
     items.push({
@@ -496,16 +518,15 @@
       type,
       value,
       color,
-      speed
+      speed: baseSpeed
     });
   }
 
   function checkCollision(circle, rect) {
-    // 냄비 윗부분 입구 쪽으로 충돌 판정 최적화
     const hitRect = {
-      x: rect.x + 5,
+      x: rect.x + 6,
       y: rect.y + 10,
-      width: rect.width - 10,
+      width: rect.width - 12,
       height: rect.height - 15
     };
     const closestX = Math.max(hitRect.x, Math.min(circle.x, hitRect.x + hitRect.width));
@@ -516,7 +537,7 @@
   }
 
   function update() {
-    // 배경 눈 내리기 효과
+    // 배경 눈 내리기
     snowflakes.forEach(snow => {
       snow.y += snow.speedY;
       snow.x += snow.speedX;
@@ -533,12 +554,15 @@
     if (keys.ArrowLeft || keys.a) kettle.x -= kettle.speed;
     if (keys.ArrowRight || keys.d) kettle.x += kettle.speed;
 
-    // 경계 제약
     kettle.x = Math.max(0, Math.min(canvas.width - kettle.width, kettle.x));
 
-    // 아이템 스폰 (시간이 지날수록 약간 빠르게)
-    const spawnRate = Math.max(20, 36 - Math.floor((GAME_DURATION - timeLeft) / 3));
-    if (frame % spawnRate === 0) spawnItem();
+    // 시간 경과에 따라 스폰 간격 단축 (36프레임 -> 최저 20프레임)
+    const elapsed = GAME_DURATION - timeLeft;
+    const currentSpawnRate = Math.max(20, Math.floor(36 - (elapsed / 45) * 16));
+
+    if (frame % currentSpawnRate === 0) {
+      spawnItem();
+    }
 
     // 아이템 이동 및 충돌
     for (let i = items.length - 1; i >= 0; i--) {
@@ -556,16 +580,13 @@
           }
         } else {
           score += it.value;
-          playSound('bell');
-          const isBig = it.value >= 1000;
-          floatingTexts.push({ 
-            text: `+${it.value.toLocaleString()}원`, 
-            x: it.x, 
-            y: it.y, 
-            color: isBig ? '#fde047' : '#ffffff', 
-            opacity: 1, 
-            life: 25 
-          });
+          if (it.type === '5000') {
+            playSound('special');
+            floatingTexts.push({ text: '💖 +5,000원!', x: it.x, y: it.y, color: '#fde047', opacity: 1, life: 35, scale: 1.3 });
+          } else {
+            playSound('coin');
+            floatingTexts.push({ text: `+${it.value.toLocaleString()}원`, x: it.x, y: it.y, color: it.value >= 1000 ? '#fde047' : '#ffffff', opacity: 1, life: 25 });
+          }
         }
         updateHUD();
         items.splice(i, 1);
@@ -589,7 +610,7 @@
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 1. 눈송이 그리기
+    // 1. 눈송이
     ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
     snowflakes.forEach(snow => {
       ctx.beginPath();
@@ -597,7 +618,7 @@
       ctx.fill();
     });
 
-    // 2. 바닥 눈밭 언덕 그리기
+    // 2. 바닥 눈밭 언덕
     ctx.fillStyle = '#e2e8f0';
     ctx.beginPath();
     ctx.ellipse(120, 710, 240, 60, 0, 0, Math.PI * 2);
@@ -616,19 +637,28 @@
       ctx.arc(it.x, it.y, it.radius, 0, Math.PI * 2);
       ctx.fillStyle = it.color;
       ctx.fill();
-      ctx.lineWidth = 2.5;
-      ctx.strokeStyle = it.type === 'ice' ? '#3b82f6' : '#b45309';
+      ctx.lineWidth = it.type === '5000' ? 3.5 : 2.5;
+      ctx.strokeStyle = it.type === 'ice' ? '#3b82f6' : (it.type === '5000' ? '#b45309' : '#b45309');
       ctx.stroke();
 
-      ctx.fillStyle = it.type === 'ice' ? '#1e3a8a' : '#78350f';
-      ctx.font = 'bold 12px -apple-system, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(it.type === 'ice' ? '❄️' : it.type, it.x, it.y);
+      // 5000원 특별 반짝임 효과
+      if (it.type === '5000') {
+        ctx.fillStyle = '#78350f';
+        ctx.font = '900 13px -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('5000', it.x, it.y);
+      } else {
+        ctx.fillStyle = it.type === 'ice' ? '#1e3a8a' : '#78350f';
+        ctx.font = 'bold 12px -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(it.type === 'ice' ? '❄️' : it.type, it.x, it.y);
+      }
       ctx.restore();
     });
 
-    // 4. 구세군 자선냄비 렌더링
+    // 4. 구세군 자선냄비
     drawRedKettle(kettle.x, kettle.y, kettle.width, kettle.height);
 
     // 5. 부유 텍스트
@@ -636,7 +666,7 @@
       ctx.save();
       ctx.globalAlpha = Math.max(0, ft.opacity);
       ctx.fillStyle = ft.color;
-      ctx.font = 'bold 17px -apple-system, sans-serif';
+      ctx.font = ft.scale ? '900 20px -apple-system, sans-serif' : 'bold 17px -apple-system, sans-serif';
       ctx.shadowColor = 'rgba(0,0,0,0.6)';
       ctx.shadowBlur = 4;
       ctx.textAlign = 'center';
@@ -647,11 +677,11 @@
     requestAnimationFrame(draw);
   }
 
-  // 구세군 자선냄비 그래픽 드로잉 함수
+  // 자선냄비 그래픽
   function drawRedKettle(x, y, w, h) {
     ctx.save();
     
-    // 자선냄비 삼각대 (거치대 프레임)
+    // 거치대 삼각대
     ctx.strokeStyle = '#334155';
     ctx.lineWidth = 4;
     ctx.lineCap = 'round';
@@ -661,7 +691,7 @@
     ctx.lineTo(x + w - 10, y + h + 8);
     ctx.stroke();
 
-    // 상단 걸이 체인
+    // 상단 체인
     ctx.strokeStyle = '#94a3b8';
     ctx.lineWidth = 2.5;
     ctx.beginPath();
@@ -669,28 +699,28 @@
     ctx.lineTo(x + w / 2, y + 16);
     ctx.stroke();
 
-    // 냄비 본체 (빨간 자선냄비)
+    // 냄비 본체
     const potX = x + 8;
     const potY = y + 16;
     const potW = w - 16;
     const potH = h - 22;
 
-    ctx.fillStyle = '#dc2626'; // 구세군 시그니처 레드
+    ctx.fillStyle = '#dc2626';
     ctx.beginPath();
     ctx.roundRect(potX, potY, potW, potH, [4, 4, 16, 16]);
     ctx.fill();
 
-    // 냄비 테두리 & 입구 라인
+    // 냄비 림
     ctx.fillStyle = '#b91c1c';
     ctx.fillRect(potX - 3, potY - 2, potW + 6, 6);
 
-    // 자선냄비 손잡이 귀
+    // 냄비 손잡이
     ctx.strokeStyle = '#7f1d1d';
     ctx.lineWidth = 3;
     ctx.strokeRect(potX - 5, potY + 8, 4, 10);
     ctx.strokeRect(potX + potW + 1, potY + 8, 4, 10);
 
-    // 자선냄비 로고 텍스트 & 종 마크
+    // 구세군 텍스트 & 종 마크
     ctx.fillStyle = '#ffffff';
     ctx.font = '900 12px sans-serif';
     ctx.textAlign = 'center';
@@ -709,7 +739,7 @@
   }
 
   /* ----------------------------------------------------
-     3. 인터랙션 및 UI 제어
+     3. 인터랙션 및 제어
   ---------------------------------------------------- */
   const startScreen = document.getElementById('start-screen');
   const gameoverScreen = document.getElementById('gameover-screen');
@@ -717,7 +747,6 @@
   const hudTimer = document.getElementById('hud-timer');
   const hudLives = document.getElementById('hud-lives');
   const soundBtn = document.getElementById('sound-btn');
-  const toast = document.getElementById('toast');
 
   function updateHUD() {
     hudScore.textContent = `🪙 ${score.toLocaleString()}원`;
@@ -761,13 +790,7 @@
     gameoverScreen.classList.remove('hidden');
   }
 
-  function showToast(msg) {
-    toast.textContent = msg;
-    toast.style.opacity = '1';
-    setTimeout(() => { toast.style.opacity = '0'; }, 1800);
-  }
-
-  // 조작 핸들러
+  // 키보드 조작
   window.addEventListener('keydown', (e) => {
     if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
   });
@@ -775,7 +798,7 @@
     if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
   });
 
-  // 모바일 터치 / 마우스 제어
+  // 터치 & 마우스 조작
   function handlePointer(clientX) {
     if (!isPlaying) return;
     const rect = canvas.getBoundingClientRect();
@@ -797,20 +820,6 @@
   soundBtn.addEventListener('click', () => {
     soundEnabled = !soundEnabled;
     soundBtn.textContent = soundEnabled ? '🔊' : '🔇';
-  });
-
-  // 𝕏 (트위터) 공유
-  document.getElementById('twitter-share-btn').addEventListener('click', () => {
-    const text = `🔔 [구세군 자선냄비] 45초 동안 총 ${score.toLocaleString()}원의 사랑을 모았습니다! 함께 따뜻한 마음을 모아주세요.`;
-    const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`;
-    window.open(shareUrl, '_blank');
-  });
-
-  // 링크 복사
-  document.getElementById('copy-link-btn').addEventListener('click', () => {
-    navigator.clipboard.writeText(window.location.href).then(() => {
-      showToast('게임 링크가 복사되었습니다!');
-    });
   });
 
   // 실행
