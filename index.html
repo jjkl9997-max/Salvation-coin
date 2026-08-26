@@ -263,7 +263,7 @@
     <button class="btn" id="start-btn">모금 시작하기</button>
   </div>
 
-  <!-- 2. 게임오버 화면 오버레이 (최고 기록 제거 완료) -->
+  <!-- 2. 게임오버 화면 오버레이 -->
   <div class="overlay hidden" id="gameover-screen">
     <div class="result-card">
       <div class="result-title">최종 모금액</div>
@@ -277,16 +277,15 @@
 <script>
   /* ----------------------------------------------------
      0. 내 컴퓨터 이미지 경로 설정
-     (HTML 파일과 같은 폴더에 파일을 두고 파일명을 적어주세요)
   ---------------------------------------------------- */
   const IMAGE_PATHS = {
-    kettle: 'ivan.png'    // 자선냄비/바구니 이미지
-    ice: 'ice.png',             // 얼음/눈덩이 장애물 이미지
-    coin100: 'coin100.png',     // 100원 이미지
-    coin500: 'coin500.png',     // 500원 이미지
-    coin1000: 'coin1000.png',   // 1000원 이미지
-    coin5000: 'coin5000.png',   // 5000원 이미지
-    bg: 'bg.png'                // 배경 이미지 (선택사항, 없으면 기본 눈밭 배경)
+    kettle: 'ivan.png',         // 쉼표 추가 완료
+    ice: 'ice.png',
+    coin100: 'coin100.png',
+    coin500: 'coin500.png',
+    coin1000: 'coin1000.png',
+    coin5000: 'coin5000.png',
+    bg: 'bg.png'
   };
 
   const images = {};
@@ -376,7 +375,7 @@
   const canvas = document.getElementById('gameCanvas');
   const ctx = canvas.getContext('2d');
 
-  const GAME_DURATION = 45; // 45초 제한
+  const GAME_DURATION = 45;
   let timeLeft = GAME_DURATION;
   let timerInterval = null;
 
@@ -397,7 +396,6 @@
 
   const keys = { ArrowLeft: false, ArrowRight: false, a: false, d: false };
 
-  // 눈송이 배경 입자
   for (let i = 0; i < 45; i++) {
     snowflakes.push({
       x: Math.random() * 400,
@@ -408,7 +406,6 @@
     });
   }
 
-  /* 난이도 & 아이템 스폰 밸런스 */
   function spawnItem() {
     const elapsed = GAME_DURATION - timeLeft;
     const rand = Math.random();
@@ -424,7 +421,6 @@
     }
 
     if (elapsed < 15) {
-      // 0~15초 (얼음 12%)
       if (rand < 0.12) {
         type = 'ice';
         value = -1;
@@ -447,7 +443,6 @@
         color = '#60a5fa';
       }
     } else if (elapsed < 30) {
-      // 15~30초 (얼음 15% -> 28%)
       const iceChance = 0.15 + ((elapsed - 15) / 15) * 0.13;
       if (rand < iceChance) {
         type = 'ice';
@@ -472,7 +467,6 @@
         color = '#60a5fa';
       }
     } else {
-      // 30~45초 (얼음 35% + 5000원 등장)
       if (rand < 0.35) {
         type = 'ice';
         value = -1;
@@ -541,7 +535,6 @@
     if (!isPlaying) return;
     frame++;
 
-    // 키보드 조작
     if (keys.ArrowLeft || keys.a) kettle.x -= kettle.speed;
     if (keys.ArrowRight || keys.d) kettle.x += kettle.speed;
 
@@ -554,7 +547,6 @@
       spawnItem();
     }
 
-    // 아이템 이동 및 충돌
     for (let i = items.length - 1; i >= 0; i--) {
       const it = items[i];
       it.y += it.speed;
@@ -585,7 +577,6 @@
       }
     }
 
-    // 부유 텍스트
     for (let i = floatingTexts.length - 1; i >= 0; i--) {
       const ft = floatingTexts[i];
       ft.y -= 1.8;
@@ -597,12 +588,10 @@
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 0. 사용자 배경 이미지 (있을 경우 렌더링)
     if (isImgLoaded(images.bg)) {
       ctx.drawImage(images.bg, 0, 0, canvas.width, canvas.height);
     }
 
-    // 1. 눈송이
     ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
     snowflakes.forEach(snow => {
       ctx.beginPath();
@@ -610,7 +599,6 @@
       ctx.fill();
     });
 
-    // 2. 바닥 눈밭 언덕 (배경 이미지가 없을 때 주로 표시)
     if (!isImgLoaded(images.bg)) {
       ctx.fillStyle = '#e2e8f0';
       ctx.beginPath();
@@ -624,7 +612,6 @@
       ctx.fill();
     }
 
-    // 3. 떨어지는 아이템 (사용자 이미지 우선, 없으면 기본 그래픽)
     items.forEach(it => {
       ctx.save();
       
@@ -632,11 +619,9 @@
       const targetImg = images[imgKey];
 
       if (isImgLoaded(targetImg)) {
-        // 내 컴퓨터 이미지로 그리기
         const size = it.radius * 2.2;
         ctx.drawImage(targetImg, it.x - size / 2, it.y - size / 2, size, size);
       } else {
-        // 기본 캔버스 드로잉 (폴백)
         ctx.beginPath();
         ctx.arc(it.x, it.y, it.radius, 0, Math.PI * 2);
         ctx.fillStyle = it.color;
@@ -662,14 +647,13 @@
       ctx.restore();
     });
 
-    // 4. 모금함 (사용자 이미지 우선, 없으면 기본 냄비 그래픽)
-    if (isImgLoaded(images.ivan))
-      ctx.drawImage(images.ivan, kettle.x, kettle.y, kettle.width, kettle.height);
+    // 모금함 렌더링 (중괄호 및 키 참조 수정 완료)
+    if (isImgLoaded(images.kettle)) {
+      ctx.drawImage(images.kettle, kettle.x, kettle.y, kettle.width, kettle.height);
     } else {
       drawRedKettle(kettle.x, kettle.y, kettle.width, kettle.height);
     }
 
-    // 5. 부유 텍스트
     floatingTexts.forEach(ft => {
       ctx.save();
       ctx.globalAlpha = Math.max(0, ft.opacity);
@@ -685,11 +669,9 @@
     requestAnimationFrame(draw);
   }
 
-  // 기본 자선냄비 그래픽 함수 (폴백용)
   function drawRedKettle(x, y, w, h) {
     ctx.save();
     
-    // 거치대 삼각대
     ctx.strokeStyle = '#334155';
     ctx.lineWidth = 4;
     ctx.lineCap = 'round';
@@ -699,7 +681,6 @@
     ctx.lineTo(x + w - 10, y + h + 8);
     ctx.stroke();
 
-    // 상단 체인
     ctx.strokeStyle = '#94a3b8';
     ctx.lineWidth = 2.5;
     ctx.beginPath();
@@ -707,7 +688,6 @@
     ctx.lineTo(x + w / 2, y + 16);
     ctx.stroke();
 
-    // 냄비 본체
     const potX = x + 8;
     const potY = y + 16;
     const potW = w - 16;
@@ -786,12 +766,10 @@
     if (timerInterval) clearInterval(timerInterval);
     playSound('gameover');
 
-    // 최고 기록 저장 및 표기 없이 이번 판 최종 점수만 출력
     document.getElementById('final-score').textContent = `${score.toLocaleString()}원`;
     gameoverScreen.classList.remove('hidden');
   }
 
-  // 키보드 조작
   window.addEventListener('keydown', (e) => {
     if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
   });
@@ -799,7 +777,6 @@
     if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
   });
 
-  // 터치 & 마우스 조작
   function handlePointer(clientX) {
     if (!isPlaying) return;
     const rect = canvas.getBoundingClientRect();
@@ -814,7 +791,6 @@
     e.preventDefault();
   }, { passive: false });
 
-  // 버튼 리스너
   document.getElementById('start-btn').addEventListener('click', startGame);
   document.getElementById('restart-btn').addEventListener('click', startGame);
 
@@ -823,7 +799,6 @@
     soundBtn.textContent = soundEnabled ? '🔊' : '🔇';
   });
 
-  // 실행
   draw();
   gameLoop();
 </script>
